@@ -1,0 +1,5 @@
+calcular a soma dos valores:  
+1 2 3 = soma parcial seis
+4 5 = soma parcial quinze
+6 = soma parcial vinte e um
+100
