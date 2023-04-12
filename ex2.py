@@ -1,9 +1,9 @@
 import ply.lex as lex
 
+# Ignore whitespace
 t_ignore = " \t\n"
 # Define tokens
 tokens = ("FLOAT", "INVALID")
-# Ignore whitespace
 
 
 # Regular expression for FLOAT token

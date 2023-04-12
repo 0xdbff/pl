@@ -175,7 +175,7 @@ from graphviz import Digraph
 
 def graph():
     """Gerar o gráfico do autómato e guardar em png"""
-    dot = Digraph("Automato Finito Deterministico")
+    dot = Digraph("AFD")
 
     dot.format = "png"
     dot.attr("graph", dpi="300")
