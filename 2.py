@@ -5,10 +5,9 @@ tokens = (
     "CANCELAR",
     "PRODUTO",
     "COIN",
-    "PRODUCT_NAME",
 )
 
-# Token definitions
+
 def t_QUANTIA(t):
     r"QUANTIA"
     return t
@@ -48,11 +47,10 @@ def t_error(t):
     t.lexer.skip(1)
 
 
-lexer = lex.lex()
-
-
 class VendingMachine:
     """A simple vending machine class."""
+
+    lexer = lex.lex()
 
     def __init__(self):
         """Initialize the vending machine."""
@@ -100,10 +98,10 @@ class VendingMachine:
             data (str): The input data containing commands for the vending machine.
         """
 
-        lexer.input(data)
+        self.lexer.input(data)
         product = None
 
-        for token in lexer:
+        for token in self.lexer:
             if token.type == "COIN":
                 self.coins.append(token.value)
 
