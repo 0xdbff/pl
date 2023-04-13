@@ -1,54 +1,46 @@
 import ply.lex as lex
 
-tokens = (
-    "QUANTIA",
-    "CANCELAR",
-    "PRODUTO",
-    "COIN",
-)
-
-
-def t_QUANTIA(t):
-    r"QUANTIA"
-    return t
-
-
-def t_CANCELAR(t):
-    r"CANCELAR"
-    return t
-
-
-def t_PRODUTO(t):
-    r"PRODUTO=\w+\."
-    return t
-
-
-def t_COIN(t):
-    r"[ce][0-9]+"
-    multiplier = 1
-    if t.value[0] == "e":
-        multiplier = 100
-    t.value = int(t.value[1:]) * multiplier / 100
-    return t
-
-
-def t_newline(t):
-    r"\n+"
-    t.lexer.lineno += len(t.value)
-
-
-def t_OTHER(t):
-    r"[ ,\.]"
-    pass
-
-
-def t_error(t):
-    print(f"Illegal character '{t.value[0]}'")
-    t.lexer.skip(1)
-
 
 class VendingMachine:
-    """A simple vending machine class."""
+    tokens = (
+        "QUANTIA",
+        "CANCELAR",
+        "PRODUTO",
+        "COIN",
+    )
+
+    def t_QUANTIA(self, t):
+        r"QUANTIA"
+        return t
+
+    def t_CANCELAR(self, t):
+        r"CANCELAR"
+        return t
+
+    def t_PRODUTO(self, t):
+        r"PRODUTO=\w+\."
+        return t
+
+    def t_COIN(self, t):
+        r"[ce][0-9]+"
+        multiplier = 1
+        if t.value[0] == "e":
+            multiplier = 100
+        t.value = int(t.value[1:]) * multiplier * 0.01
+        return t
+
+    def t_newline(self, t):
+        r"\n+"
+        t.lexer.lineno += len(t.value)
+
+    def t_OTHER(self, t):
+        r"[ ,\.]"
+        pass
+
+    def t_error(self, t):
+        print(f"Illegal character '{t.value[0]}'")
+        t.lexer.skip(1)
+        """A simple vending machine class."""
 
     lexer = lex.lex()
 
@@ -125,12 +117,17 @@ class VendingMachine:
                 print(f"valor devolvido: €{self.balance:.2f}")
                 self.balance = 0
 
-        # if self.inserting and self.coins:
-        #     self.insert_coin()
-
 
 def main():
-    data = "QUANTIA c10, e1, c50, c50.\nPRODUTO=twix.\nQUANTIA c20, c70.\nPRODUTO=twix.\nQUANTIA c20, c10, c5, c50, c10, c5.\nCANCELAR"
+    data = """
+    QUANTIA c10, e1, c50, c50.
+    PRODUTO=twix.
+    QUANTIA c20, c70.
+    PRODUTO=twix.
+    QUANTIA c20, c10, c5, c50, c10, c5.
+    CANCELAR
+
+    """
 
     vending_machine = VendingMachine()
     vending_machine.process(data)
