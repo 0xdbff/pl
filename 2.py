@@ -1,66 +1,155 @@
-import ply.lex as lex
+import json
+from typing import Dict
+import ply.lex as plex
+import atexit
 
 
 class VendingMachine:
+    """A simple vending machine class."""
+
+    products: Dict[str, Dict[str, float]] = {}
+    coins: Dict[str, int] = {}
+
+    states = (
+        ("inserting", "exclusive"),
+        ("sell", "exclusive"),
+        ("refill", "exclusive"),
+    )
+
     tokens = (
         "QUANTIA",
         "CANCELAR",
         "PRODUTO",
+        "ITEM",
         "COIN",
+        "OTHER",
     )
 
+    @plex.TOKEN(r"QUANTIA")
     def t_QUANTIA(self, t):
-        r"QUANTIA"
-        return t
+        """ """
 
-    def t_CANCELAR(self, t):
-        r"CANCELAR"
-        return t
+        t.lexer.begin("inserting")
 
-    def t_PRODUTO(self, t):
-        r"PRODUTO=\w+\."
-        return t
+    @plex.TOKEN(r"REFILL")
+    def t_REFILL(self, t):
+        """ """
 
-    def t_COIN(self, t):
-        r"[ce][0-9]+"
+        t.lexer.begin("refill")
+
+    @plex.TOKEN(r"[ce][0-9]+")
+    def t_inserting_COIN(self, t):
+        """ """
+
+        if t.value[0:] not in self.coins:
+            print("Coin not accepted by te vending machine!")
+            return
+
         multiplier = 1
+        self.coins[t.value] += 1
+
         if t.value[0] == "e":
             multiplier = 100
-        t.value = int(t.value[1:]) * multiplier * 0.01
-        return t
 
-    def t_newline(self, t):
-        r"\n+"
+        value = int(t.value[1:]) * multiplier * 0.01
+        self.client_balance += value
+        print(f"valor inserido: €{value:.2f} (saldo: €{self.client_balance:.2f})")
+
+    @plex.TOKEN(r"PRODUTO")
+    def t_inserting_PRODUTO(self, t):
+        """ """
+
+        t.lexer.begin("sell")
+
+    @plex.TOKEN(r"=\w+")
+    def t_sell_ITEM(self, t):
+        """ """
+
+        t.value = t.value[1:].rstrip(".")
+
+        product = t.value[0:]
+        if product not in self.products:
+            print("Invalid product item!")
+            return
+
+        self.sell_product(product)
+        t.lexer.begin("INITIAL")
+
+    @plex.TOKEN(r"=\w+ \d+")
+    def t_refill_ITEM(self, t):
+        """ """
+
+        t.value = (t.value[1:].rstrip(".")).split(" ")
+        t.lexer.begin("INITIAL")
+
+        product = t.value[0:]
+        if product not in self.products:
+            print("Invalid product item!")
+            return
+
+        self.sell_product(product)
+
+    @plex.TOKEN(r"CANCELAR")
+    def t_ANY_CANCELAR(self, t):
+        """ """
+
+        t.lexer.begin("INITIAL")
+        print(f"valor devolvido: €{self.client_balance:.2f}")
+
+        change = self.calculate_change(self.client_balance)
+        self.update_coins(change)
+        self.client_balance = 0
+
+    @staticmethod
+    @plex.TOKEN(r"\n+")
+    def t_ANY_newline(t):
+        """ """
+
         t.lexer.lineno += len(t.value)
 
-    def t_OTHER(self, t):
-        r"[ ,\.]"
-        pass
+    @staticmethod
+    @plex.TOKEN(r".")
+    def t_ANY_OTHER(t):
+        """ """
 
-    def t_error(self, t):
+        t.value = None
+
+    def t_ANY_error(self, t):
+        """ """
+
         print(f"Illegal character '{t.value[0]}'")
         t.lexer.skip(1)
-        """A simple vending machine class."""
 
-    lexer = lex.lex()
-
-    def __init__(self):
+    def __init__(self, **kwargs):
         """Initialize the vending machine."""
 
-        self.products = {
-            "twix": 2.30,
-        }
-        self.coins = []
-        self.balance = 0
-        self.inserting = False
+        self.lexer = plex.lex(module=self, **kwargs)
+        self.client_balance = 0
 
-    def insert_coin(self):
-        """Add the coins to the balance and clear the coins list."""
+        with open("products.json", "r") as file:
+            self.products = json.load(file)
 
-        total = sum(self.coins)
-        self.balance += total
-        print(f"valor inserido: €{total:.2f} (saldo: €{self.balance:.2f})")
-        self.coins = []
+        with open("coins.json", "r") as file:
+            self.coins = json.load(file)
+
+        atexit.register(self._save_state)
+
+    def _save_state(self):
+        """
+        Save the vending machine state to a json file.
+        The listed items, the prices and quantities,
+        available coins, and the amount for every type.
+        """
+
+        with open("products.json", "w") as file:
+            json.dump(self.products, file, indent=4)
+
+        with open("coins.json", "w") as file:
+            json.dump(self.coins, file, indent=4)
+
+    def reset_coins(self):
+        for coin in self.coins:
+            self.coins[coin] = 20
 
     def sell_product(self, product):
         """
@@ -70,63 +159,114 @@ class VendingMachine:
             product (str): The name of the product to sell.
         """
 
-        price = self.products.get(product)
-        if not price:
-            print(f"produto não encontrado: {product}")
+        price = self.products[product]["price"]
+        if not price or price <= 0:
+            print(f"Invalid product, aborting item purchase! ({product})")
             return
-        if self.balance >= price:
-            print(f"compra: '{product}', €{price:.2f} (sem troco)")
-            self.balance -= price
+
+        stock = self.products[product]["stock"]
+        if not stock or stock <= 0:
+            print(f"There are no products to sell, aborting! ({product})")
+            return
+
+        if self.client_balance >= price:
+            change_needed = self.client_balance - price
+            change = self.calculate_change(change_needed)
+
+            if change is not None:
+                print(
+                    f"Purchased: '{product}', €{price:.2f} "
+                    f"(change = {self.client_balance - price})"
+                )
+                self.client_balance = 0
+                self.update_coins(change)
+                self.products[product]["stock"] -= 1
+            else:
+                print(
+                    "Cannot provide change for the purchase "
+                    "(Aborting the item purchase!)"
+                )
         else:
             print(
-                f"preço: €{price:.2f} (quantia insuficiente) (saldo: €{self.balance:.2f})"
+                f"Price: €{price:.2f} (insufficient funds) "
+                f"(client balance: €{self.client_balance:.2f})"
             )
+
+    def calculate_change(self, change_needed):
+        """
+        Calculate the change to be given using the available coins.
+
+        Args:
+            change_needed (float): The amount of change needed.
+
+        Returns:
+            Optional[List[str]]: A list of coin names representing the change,
+            or None if exact change cannot be given.
+        """
+
+        coin_values = {
+            "c5": 0.05,
+            "c10": 0.10,
+            "c20": 0.20,
+            "c50": 0.50,
+            "e1": 1.00,
+            "e2": 2.00,
+        }
+        coins_copy = self.coins.copy()
+        change = []
+
+        for coin_name, coin_value in sorted(
+            coin_values.items(), key=lambda x: x[1], reverse=True
+        ):
+            while coins_copy[coin_name] > 0 and change_needed >= coin_value:
+                change_needed -= coin_value
+                change_needed = round(change_needed, 2)
+                change.append(coin_name)
+                coins_copy[coin_name] -= 1
+
+        if change_needed > 0:
+            return None
+        else:
+            return change
+
+    def update_coins(self, change):
+        """
+        Update the available coins based on the given change.
+
+        Args:
+            change (List[str]): A list of coin names representing the change.
+        """
+
+        for coin in change:
+            print(coin)
+            self.coins[coin] -= 1
 
     def process(self, data):
         """
         Process the input data to simulate the vending machine.
 
         Args:
-            data (str): The input data containing commands for the vending machine.
+            data (str): The input data containing commands for the vending
+            machine.
         """
 
+        if self.lexer is None:
+            return
+
         self.lexer.input(data)
-        product = None
 
-        for token in self.lexer:
-            if token.type == "COIN":
-                self.coins.append(token.value)
-
-            elif token.type == "QUANTIA":
-                if self.inserting:
-                    self.insert_coin()
-                self.inserting = True
-
-            elif token.type == "PRODUTO":
-                if self.inserting:
-                    self.insert_coin()
-                    self.inserting = False
-                product = token.value.split("=")[1].rstrip(".")
-                if product is not None:
-                    self.sell_product(product)
-                product = None
-
-            elif token.type == "CANCELAR":
-                if self.coins:
-                    self.insert_coin()
-                print(f"valor devolvido: €{self.balance:.2f}")
-                self.balance = 0
+        for _ in self.lexer:
+            continue
 
 
 def main():
     data = """
     QUANTIA c10, e1, c50, c50.
-    PRODUTO=twix.
+    PRODUTO=Cola.
     QUANTIA c20, c70.
-    PRODUTO=twix.
+    PRODUTO=Cola.
     QUANTIA c20, c10, c5, c50, c10, c5.
     CANCELAR
-
     """
 
     vending_machine = VendingMachine()
