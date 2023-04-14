@@ -1,6 +1,6 @@
 # Trabalho PL
 
-## Exercicio 1
+## Exercicio 2
 
 ## License
 
