@@ -2,7 +2,9 @@
 
 ## License
 
-[dir link](ex1/)
+[Exercicio 1](ex1/)
+
+[Exercicio 2](ex2/)
 
 Licensed under either of
 
