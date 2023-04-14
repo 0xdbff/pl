@@ -37,7 +37,8 @@ class VendingMachine:
     @staticmethod
     @plex.TOKEN(r"INSERT")
     def t_INSERT(t):
-        """Transition to the 'inserting' state.
+        """
+        Transition to the 'inserting' state when in the INITIAL state.
 
         Args:
             t (Token): The token object.
@@ -48,7 +49,8 @@ class VendingMachine:
     @staticmethod
     @plex.TOKEN(r"PRODUCT")
     def t_PRODUCT(t):
-        """Transition to the 'sell' state.
+        """
+        Transition to the 'sell' state when in the INITIAL state.
 
         Args:
             t (Token): The token object.
@@ -59,7 +61,8 @@ class VendingMachine:
     @staticmethod
     @plex.TOKEN(r"REFILL")
     def t_REFILL(t):
-        """Transition to the 'refill' state.
+        """
+        Transition to the 'refill' state when in the INITIAL state.
 
         Args:
             t (Token): The token object.
@@ -70,7 +73,8 @@ class VendingMachine:
     @staticmethod
     @plex.TOKEN(r"\.")
     def t_ANY_RESET(t):
-        """Transition to the 'INITIAL' state and print a new line.
+        """
+        Transition to the 'INITIAL' state and print a new line when in ANY state.
 
         Args:
             t (Token): The token object.
@@ -81,7 +85,8 @@ class VendingMachine:
 
     @plex.TOKEN(r"[ce][0-9]+")
     def t_inserting_COIN(self, t):
-        """Process the coin input and update the client balance.
+        """
+        Process the coin input and update the client balance when in the inserting state.
 
         Args:
             t (Token): The token object with a value containing the coin
@@ -100,11 +105,12 @@ class VendingMachine:
 
         value = int(t.value[1:]) * multiplier * 0.01
         self.client_balance += value
-        print(f"valor inserido: {value:.2f}€ (saldo: {self.client_balance:.2f}€)")
+        print(f"inserted value: {value:.2f}€ (balance: {self.client_balance:.2f}€)")
 
     @plex.TOKEN(r"=\w+")
     def t_sell_ITEM(self, t):
-        """Process the product input for selling.
+        """
+        Process the product input for selling when in the sell state.
 
         Args:
             t (Token): The token object with a value containing the product
@@ -123,7 +129,8 @@ class VendingMachine:
 
     @plex.TOKEN(r"=(\w+)\s(\d+)")
     def t_refill_ITEM(self, t):
-        """Process the product input for refilling.
+        """
+        Process the product input for refilling when in the refill state.
 
         Args:
             t (Token): The token object with a value containing a product name
@@ -141,13 +148,15 @@ class VendingMachine:
 
     @plex.TOKEN(r"CANCEL")
     def t_ANY_CANCEL(self, t):
-        """Process the cancellation and return the money to the client
+        """
+        Process the cancellation and return the money to the client when
+        in ANY state
 
         Args:
             t (Token): The token object.
         """
 
-        print(f"valor devolvido: {self.client_balance:.2f}€")
+        print(f"returned value: {self.client_balance:.2f}€")
 
         change = self.calculate_change(self.client_balance)
         self.update_coins(change)
@@ -158,10 +167,11 @@ class VendingMachine:
     @staticmethod
     @plex.TOKEN(r"\n+")
     def t_ANY_newline(t):
-        """Update the lexer line number.
+        """
+        Update the lexer line number.
 
         Args:
-            t (Token): The token object containing newline characters.
+            t (Token): The token object containing newline characters when in ANY state.
         """
 
         t.lexer.lineno += len(t.value)
@@ -169,7 +179,8 @@ class VendingMachine:
     @staticmethod
     @plex.TOKEN(r".")
     def t_ANY_OTHER(t):
-        """Ignore any other character in the input.
+        """
+        Ignore any other character in the input when in ANY state.
 
         Args:
             t (Token): The token object containing unrecognized characters.
@@ -179,7 +190,8 @@ class VendingMachine:
 
     @staticmethod
     def t_ANY_error(t):
-        """Handle errors for illegal characters in the input.
+        """
+        Handle errors for illegal characters in the input when in ANY state.
 
         Args:
             t (Token): The token object containing illegal characters.
@@ -189,7 +201,8 @@ class VendingMachine:
         t.lexer.skip(1)
 
     def __init__(self, **kwargs):
-        """Initialize the vending machine.
+        """
+        Initialize the vending machine.
 
         Attributes:
             lexer: An instance of the lexer created using the plex library.
