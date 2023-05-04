@@ -1,5 +1,3 @@
-""" Ex2 vending maching using python ply.lex."""
-
 import re
 import json
 from typing import Dict
@@ -8,6 +6,7 @@ import atexit
 import math
 import datetime
 import os
+import argparse
 
 
 class VendingMachine:
@@ -230,6 +229,7 @@ class VendingMachine:
         Save the current state of the vending machine to JSON files.
         This inclues products info, coins and the sales reports.
         """
+        self._print_sale()
 
         with open("products.json", "w") as file:
             json.dump(self.products, file, indent=4)
@@ -423,15 +423,30 @@ class VendingMachine:
         for _ in self.lexer:
             continue
 
-        self._print_sale()
-
 
 def main():
-    with open("input.dat", "r") as file:
-        data = file.read()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--io", action="store_true")
+    args = parser.parse_args()
 
     vending_machine = VendingMachine()
-    vending_machine.process(data)
+
+    if args.io:
+        print("Insert commands (terminate with .EXIT, execute with .):")
+        data = ""
+        while True:
+            line = input()
+            if line == ".EXIT":
+                break
+            if line == ".":
+                vending_machine.process(data.strip())
+                data = ""
+            else:
+                data += line + "\n"
+    else:
+        with open("input.dat", "r") as file:
+            data = file.read()
+        vending_machine.process(data)
 
     print(
         f"The monetary value in the vending machine {vending_machine.coins_value():.2f}€"
