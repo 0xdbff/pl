@@ -1,0 +1,3 @@
+import rename
+
+rename.main()
