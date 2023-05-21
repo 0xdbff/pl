@@ -1,42 +1,70 @@
 import ply.yacc as yacc
 import ply.lex as lex
 from graphviz import Digraph
+import os
 import copy
 
 
 class Interpreter:
-    reserved = {"ESCREVER": "ESCREVER"}
+    keywords = {
+        "stdout": "stdout",
+        "variable": "var",
+        "constant": "const",
+        "stdin": "stdin",
+        "function": "fn",
+        "return": "return",
+        "while": "while",
+        "for": "for",
+        "in": "in",
+        "not": "not",
+        "and": "and",
+        "or": "or",
+        "break": "break",
+        "continue": "continue",
+    }
 
     tokens = [
-        "STRING",
-        "NUMBER",
-        "COMMA",
-        "SEMICOLON",
-        "TIMES",
-        "PLUS",
-    ] + list(reserved.values())
-
-    def t_IDENTIFIER(self, t):
-        r"[a-zA-Z_][a-zA-Z_0-9]*"
-        t.type = self.reserved.get(t.value, "ESCREVER")
-        return t
+        "string",
+        "number",
+        "comma",
+        "semicolon",
+        "times",
+        "plus",
+    ] + list(keywords.values())
 
     t_ignore = " \t"
 
-    def t_STRING(self, t):
+    def t_identifier(self, t):
+        r"[a-zA-Z_][a-zA-Z_0-9]*"
+        t.type = self.keywords.get(t.value, "stdout")
+        return t
+
+    def t_string(self, t):
         r'"[^"]*"'
         t.value = t.value[1:-1]
         return t
 
-    def t_NUMBER(self, t):
-        r"\d+"
-        t.value = int(t.value)
+    @lex.TOKEN(r"-?0[bB][01]+|-?0[oO][0-7]+|-?0[xX][0-9a-fA-F]+|-?\d+\.\d+|-?\d+")
+    def t_number(self, t):
+        try:
+            if "." in t.value:
+                t.value = float(t.value)
+            elif t.value.lower().startswith("0b"):
+                t.value = int(t.value, 2)
+            elif t.value.lower().startswith("0o"):
+                t.value = int(t.value, 8)
+            elif t.value.lower().startswith("0x"):
+                t.value = int(t.value, 16)
+            else:
+                t.value = int(t.value)
+        except ValueError:
+            print(f"Could not parse number: {t.value}")
         return t
 
-    t_COMMA = r","
-    t_SEMICOLON = r";"
-    t_TIMES = r"\*"
-    t_PLUS = r"\+"
+    t_comma = r","
+    t_semicolon = r";"
+    t_times = r"\*"
+    t_plus = r"\+"
 
     def t_comment(self, t):
         r"//.*"
@@ -55,11 +83,11 @@ class Interpreter:
         t.lexer.skip(1)
 
     def p_statement(self, p):
-        "statement : ESCREVER arguments SEMICOLON"
+        "statement : stdout arguments semicolon"
         p[0] = Node("statement", [p[2]])
 
     def p_arguments(self, p):
-        """arguments : arguments COMMA expression
+        """arguments : arguments comma expression
         | expression"""
         if len(p) == 2:
             p[0] = Node("arguments", [p[1]])
@@ -67,27 +95,24 @@ class Interpreter:
             p[0] = Node("arguments", p[1].children + [p[3]])
 
     def p_expression(self, p):
-        """expression : expression PLUS term
-        | expression TIMES term
+        """expression : expression plus term
+        | expression times term
         | term"""
         if len(p) == 2:
             p[0] = p[1]
         else:
-            if p[2] == "+":
-                p[0] = Node("expression", [copy.deepcopy(p[1]), p[3]])
-            elif p[2] == "*":
-                p[0] = Node("expression", [copy.deepcopy(p[1]), p[3]])
+            p[0] = Node("expression", [copy.deepcopy(p[1]), p[3], p[2]])
 
     def p_term(self, p):
-        """term : NUMBER
-        | STRING"""
+        """term : number
+        | string"""
         p[0] = Node("term", [p[1]])
 
     def p_error(self, p):
         if p:
-            print(f"Syntax error at '{p.value}'")
+            print(f"syntax error at '{p.value}'")
         else:
-            print("Syntax error at EOF")
+            print("syntax error at EOF")
 
     def __init__(self, **kwargs):
         self.lexer = lex.lex(module=self, **kwargs)
@@ -103,8 +128,29 @@ class Interpreter:
                 continue
             tree = self.parser.parse(s, lexer=self.lexer)
             if tree is not None:
+                self.process_tree(tree)
                 g = tree.to_graphviz()
                 g.render(filename="syntax_tree", format="png")
+                os.remove("syntax_tree")
+
+    def process_tree(self, tree):
+        if tree.type == "statement":
+            if tree.children[0].type == "arguments":
+                for arg in tree.children[0].children:
+                    if arg.type == "term":
+                        print(arg.children[0])
+                    elif arg.type == "expression":
+                        op = arg.children[2]
+                        if op == "+":
+                            print(
+                                arg.children[0].children[0]
+                                + arg.children[1].children[0]
+                            )
+                        elif op == "*":
+                            print(
+                                arg.children[0].children[0]
+                                * arg.children[1].children[0]
+                            )
 
 
 class Node:
@@ -114,7 +160,7 @@ class Node:
 
     def to_graphviz(self, g=None):
         if g is None:
-            g = Digraph("G")
+            g = Digraph("g")
 
         name = f"{id(self)}"
         g.node(name, label=self.type)

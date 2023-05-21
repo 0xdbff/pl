@@ -1,27 +1,128 @@
 Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
+Unused terminals:
+
+    and
+    auto
+    break
+    case
+    char
+    const
+    continue
+    default
+    do
+    double
+    else
+    enum
+    extern
+    float
+    fn
+    for
+    goto
+    if
+    in
+    int
+    int16_t
+    int32_t
+    int64_t
+    int8_t
+    long
+    not
+    or
+    register
+    return
+    short
+    signed
+    size_t
+    sizeof
+    ssize_t
+    static
+    stdin
+    struct
+    switch
+    typeodef
+    uint16_t
+    uint32_t
+    uint64_t
+    uint8_t
+    union
+    unsigned
+    var
+    void
+    volatile
+    while
+
 Grammar
 
 Rule 0     S' -> statement
-Rule 1     statement -> ESCREVER arguments SEMICOLON
-Rule 2     arguments -> arguments COMMA expression
+Rule 1     statement -> stdout arguments semicolon
+Rule 2     arguments -> arguments comma expression
 Rule 3     arguments -> expression
-Rule 4     expression -> expression PLUS term
-Rule 5     expression -> expression TIMES term
+Rule 4     expression -> expression plus term
+Rule 5     expression -> expression times term
 Rule 6     expression -> term
-Rule 7     term -> NUMBER
-Rule 8     term -> STRING
+Rule 7     term -> number
+Rule 8     term -> string
 
 Terminals, with rules where they appear
 
-COMMA                : 2
-ESCREVER             : 1
-NUMBER               : 7
-PLUS                 : 4
-SEMICOLON            : 1
-STRING               : 8
-TIMES                : 5
+and                  : 
+auto                 : 
+break                : 
+case                 : 
+char                 : 
+comma                : 2
+const                : 
+continue             : 
+default              : 
+do                   : 
+double               : 
+else                 : 
+enum                 : 
 error                : 
+extern               : 
+float                : 
+fn                   : 
+for                  : 
+goto                 : 
+if                   : 
+in                   : 
+int                  : 
+int16_t              : 
+int32_t              : 
+int64_t              : 
+int8_t               : 
+long                 : 
+not                  : 
+number               : 7
+or                   : 
+plus                 : 4
+register             : 
+return               : 
+semicolon            : 1
+short                : 
+signed               : 
+size_t               : 
+sizeof               : 
+ssize_t              : 
+static               : 
+stdin                : 
+stdout               : 1
+string               : 8
+struct               : 
+switch               : 
+times                : 5
+typeodef             : 
+uint16_t             : 
+uint32_t             : 
+uint64_t             : 
+uint8_t              : 
+union                : 
+unsigned             : 
+var                  : 
+void                 : 
+volatile             : 
+while                : 
 
 Nonterminals, with rules where they appear
 
@@ -35,9 +136,9 @@ Parsing method: LALR
 state 0
 
     (0) S' -> . statement
-    (1) statement -> . ESCREVER arguments SEMICOLON
+    (1) statement -> . stdout arguments semicolon
 
-    ESCREVER        shift and go to state 2
+    stdout          shift and go to state 2
 
     statement                      shift and go to state 1
 
@@ -49,17 +150,17 @@ state 1
 
 state 2
 
-    (1) statement -> ESCREVER . arguments SEMICOLON
-    (2) arguments -> . arguments COMMA expression
+    (1) statement -> stdout . arguments semicolon
+    (2) arguments -> . arguments comma expression
     (3) arguments -> . expression
-    (4) expression -> . expression PLUS term
-    (5) expression -> . expression TIMES term
+    (4) expression -> . expression plus term
+    (5) expression -> . expression times term
     (6) expression -> . term
-    (7) term -> . NUMBER
-    (8) term -> . STRING
+    (7) term -> . number
+    (8) term -> . string
 
-    NUMBER          shift and go to state 6
-    STRING          shift and go to state 7
+    number          shift and go to state 6
+    string          shift and go to state 7
 
     arguments                      shift and go to state 3
     expression                     shift and go to state 4
@@ -67,127 +168,127 @@ state 2
 
 state 3
 
-    (1) statement -> ESCREVER arguments . SEMICOLON
-    (2) arguments -> arguments . COMMA expression
+    (1) statement -> stdout arguments . semicolon
+    (2) arguments -> arguments . comma expression
 
-    SEMICOLON       shift and go to state 8
-    COMMA           shift and go to state 9
+    semicolon       shift and go to state 8
+    comma           shift and go to state 9
 
 
 state 4
 
     (3) arguments -> expression .
-    (4) expression -> expression . PLUS term
-    (5) expression -> expression . TIMES term
+    (4) expression -> expression . plus term
+    (5) expression -> expression . times term
 
-    SEMICOLON       reduce using rule 3 (arguments -> expression .)
-    COMMA           reduce using rule 3 (arguments -> expression .)
-    PLUS            shift and go to state 10
-    TIMES           shift and go to state 11
+    semicolon       reduce using rule 3 (arguments -> expression .)
+    comma           reduce using rule 3 (arguments -> expression .)
+    plus            shift and go to state 10
+    times           shift and go to state 11
 
 
 state 5
 
     (6) expression -> term .
 
-    PLUS            reduce using rule 6 (expression -> term .)
-    TIMES           reduce using rule 6 (expression -> term .)
-    SEMICOLON       reduce using rule 6 (expression -> term .)
-    COMMA           reduce using rule 6 (expression -> term .)
+    plus            reduce using rule 6 (expression -> term .)
+    times           reduce using rule 6 (expression -> term .)
+    semicolon       reduce using rule 6 (expression -> term .)
+    comma           reduce using rule 6 (expression -> term .)
 
 
 state 6
 
-    (7) term -> NUMBER .
+    (7) term -> number .
 
-    PLUS            reduce using rule 7 (term -> NUMBER .)
-    TIMES           reduce using rule 7 (term -> NUMBER .)
-    SEMICOLON       reduce using rule 7 (term -> NUMBER .)
-    COMMA           reduce using rule 7 (term -> NUMBER .)
+    plus            reduce using rule 7 (term -> number .)
+    times           reduce using rule 7 (term -> number .)
+    semicolon       reduce using rule 7 (term -> number .)
+    comma           reduce using rule 7 (term -> number .)
 
 
 state 7
 
-    (8) term -> STRING .
+    (8) term -> string .
 
-    PLUS            reduce using rule 8 (term -> STRING .)
-    TIMES           reduce using rule 8 (term -> STRING .)
-    SEMICOLON       reduce using rule 8 (term -> STRING .)
-    COMMA           reduce using rule 8 (term -> STRING .)
+    plus            reduce using rule 8 (term -> string .)
+    times           reduce using rule 8 (term -> string .)
+    semicolon       reduce using rule 8 (term -> string .)
+    comma           reduce using rule 8 (term -> string .)
 
 
 state 8
 
-    (1) statement -> ESCREVER arguments SEMICOLON .
+    (1) statement -> stdout arguments semicolon .
 
-    $end            reduce using rule 1 (statement -> ESCREVER arguments SEMICOLON .)
+    $end            reduce using rule 1 (statement -> stdout arguments semicolon .)
 
 
 state 9
 
-    (2) arguments -> arguments COMMA . expression
-    (4) expression -> . expression PLUS term
-    (5) expression -> . expression TIMES term
+    (2) arguments -> arguments comma . expression
+    (4) expression -> . expression plus term
+    (5) expression -> . expression times term
     (6) expression -> . term
-    (7) term -> . NUMBER
-    (8) term -> . STRING
+    (7) term -> . number
+    (8) term -> . string
 
-    NUMBER          shift and go to state 6
-    STRING          shift and go to state 7
+    number          shift and go to state 6
+    string          shift and go to state 7
 
     expression                     shift and go to state 12
     term                           shift and go to state 5
 
 state 10
 
-    (4) expression -> expression PLUS . term
-    (7) term -> . NUMBER
-    (8) term -> . STRING
+    (4) expression -> expression plus . term
+    (7) term -> . number
+    (8) term -> . string
 
-    NUMBER          shift and go to state 6
-    STRING          shift and go to state 7
+    number          shift and go to state 6
+    string          shift and go to state 7
 
     term                           shift and go to state 13
 
 state 11
 
-    (5) expression -> expression TIMES . term
-    (7) term -> . NUMBER
-    (8) term -> . STRING
+    (5) expression -> expression times . term
+    (7) term -> . number
+    (8) term -> . string
 
-    NUMBER          shift and go to state 6
-    STRING          shift and go to state 7
+    number          shift and go to state 6
+    string          shift and go to state 7
 
     term                           shift and go to state 14
 
 state 12
 
-    (2) arguments -> arguments COMMA expression .
-    (4) expression -> expression . PLUS term
-    (5) expression -> expression . TIMES term
+    (2) arguments -> arguments comma expression .
+    (4) expression -> expression . plus term
+    (5) expression -> expression . times term
 
-    SEMICOLON       reduce using rule 2 (arguments -> arguments COMMA expression .)
-    COMMA           reduce using rule 2 (arguments -> arguments COMMA expression .)
-    PLUS            shift and go to state 10
-    TIMES           shift and go to state 11
+    semicolon       reduce using rule 2 (arguments -> arguments comma expression .)
+    comma           reduce using rule 2 (arguments -> arguments comma expression .)
+    plus            shift and go to state 10
+    times           shift and go to state 11
 
 
 state 13
 
-    (4) expression -> expression PLUS term .
+    (4) expression -> expression plus term .
 
-    PLUS            reduce using rule 4 (expression -> expression PLUS term .)
-    TIMES           reduce using rule 4 (expression -> expression PLUS term .)
-    SEMICOLON       reduce using rule 4 (expression -> expression PLUS term .)
-    COMMA           reduce using rule 4 (expression -> expression PLUS term .)
+    plus            reduce using rule 4 (expression -> expression plus term .)
+    times           reduce using rule 4 (expression -> expression plus term .)
+    semicolon       reduce using rule 4 (expression -> expression plus term .)
+    comma           reduce using rule 4 (expression -> expression plus term .)
 
 
 state 14
 
-    (5) expression -> expression TIMES term .
+    (5) expression -> expression times term .
 
-    PLUS            reduce using rule 5 (expression -> expression TIMES term .)
-    TIMES           reduce using rule 5 (expression -> expression TIMES term .)
-    SEMICOLON       reduce using rule 5 (expression -> expression TIMES term .)
-    COMMA           reduce using rule 5 (expression -> expression TIMES term .)
+    plus            reduce using rule 5 (expression -> expression times term .)
+    times           reduce using rule 5 (expression -> expression times term .)
+    semicolon       reduce using rule 5 (expression -> expression times term .)
+    comma           reduce using rule 5 (expression -> expression times term .)
 
