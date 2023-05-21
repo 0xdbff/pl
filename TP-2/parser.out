@@ -3,60 +3,26 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 Unused terminals:
 
     and
-    auto
     break
-    case
-    char
     const
     continue
-    default
-    do
-    double
-    else
-    enum
-    extern
-    float
     fn
     for
-    goto
-    if
+    identifier
     in
-    int
-    int16_t
-    int32_t
-    int64_t
-    int8_t
-    long
     not
     or
-    register
     return
-    short
-    signed
-    size_t
-    sizeof
-    ssize_t
-    static
     stdin
-    struct
-    switch
-    typeodef
-    uint16_t
-    uint32_t
-    uint64_t
-    uint8_t
-    union
-    unsigned
+    stdout
     var
-    void
-    volatile
     while
 
 Grammar
 
 Rule 0     S' -> statement
-Rule 1     statement -> stdout arguments semicolon
-Rule 2     arguments -> arguments comma expression
+Rule 1     statement -> keyword arguments ;
+Rule 2     arguments -> arguments , expression
 Rule 3     arguments -> expression
 Rule 4     expression -> expression plus term
 Rule 5     expression -> expression times term
@@ -66,62 +32,28 @@ Rule 8     term -> string
 
 Terminals, with rules where they appear
 
+,                    : 2
+;                    : 1
 and                  : 
-auto                 : 
 break                : 
-case                 : 
-char                 : 
-comma                : 2
 const                : 
 continue             : 
-default              : 
-do                   : 
-double               : 
-else                 : 
-enum                 : 
 error                : 
-extern               : 
-float                : 
 fn                   : 
 for                  : 
-goto                 : 
-if                   : 
+identifier           : 
 in                   : 
-int                  : 
-int16_t              : 
-int32_t              : 
-int64_t              : 
-int8_t               : 
-long                 : 
+keyword              : 1
 not                  : 
 number               : 7
 or                   : 
 plus                 : 4
-register             : 
 return               : 
-semicolon            : 1
-short                : 
-signed               : 
-size_t               : 
-sizeof               : 
-ssize_t              : 
-static               : 
 stdin                : 
-stdout               : 1
+stdout               : 
 string               : 8
-struct               : 
-switch               : 
 times                : 5
-typeodef             : 
-uint16_t             : 
-uint32_t             : 
-uint64_t             : 
-uint8_t              : 
-union                : 
-unsigned             : 
 var                  : 
-void                 : 
-volatile             : 
 while                : 
 
 Nonterminals, with rules where they appear
@@ -136,9 +68,9 @@ Parsing method: LALR
 state 0
 
     (0) S' -> . statement
-    (1) statement -> . stdout arguments semicolon
+    (1) statement -> . keyword arguments ;
 
-    stdout          shift and go to state 2
+    keyword         shift and go to state 2
 
     statement                      shift and go to state 1
 
@@ -150,8 +82,8 @@ state 1
 
 state 2
 
-    (1) statement -> stdout . arguments semicolon
-    (2) arguments -> . arguments comma expression
+    (1) statement -> keyword . arguments ;
+    (2) arguments -> . arguments , expression
     (3) arguments -> . expression
     (4) expression -> . expression plus term
     (5) expression -> . expression times term
@@ -168,11 +100,11 @@ state 2
 
 state 3
 
-    (1) statement -> stdout arguments . semicolon
-    (2) arguments -> arguments . comma expression
+    (1) statement -> keyword arguments . ;
+    (2) arguments -> arguments . , expression
 
-    semicolon       shift and go to state 8
-    comma           shift and go to state 9
+    ;               shift and go to state 8
+    ,               shift and go to state 9
 
 
 state 4
@@ -181,8 +113,8 @@ state 4
     (4) expression -> expression . plus term
     (5) expression -> expression . times term
 
-    semicolon       reduce using rule 3 (arguments -> expression .)
-    comma           reduce using rule 3 (arguments -> expression .)
+    ;               reduce using rule 3 (arguments -> expression .)
+    ,               reduce using rule 3 (arguments -> expression .)
     plus            shift and go to state 10
     times           shift and go to state 11
 
@@ -193,8 +125,8 @@ state 5
 
     plus            reduce using rule 6 (expression -> term .)
     times           reduce using rule 6 (expression -> term .)
-    semicolon       reduce using rule 6 (expression -> term .)
-    comma           reduce using rule 6 (expression -> term .)
+    ;               reduce using rule 6 (expression -> term .)
+    ,               reduce using rule 6 (expression -> term .)
 
 
 state 6
@@ -203,8 +135,8 @@ state 6
 
     plus            reduce using rule 7 (term -> number .)
     times           reduce using rule 7 (term -> number .)
-    semicolon       reduce using rule 7 (term -> number .)
-    comma           reduce using rule 7 (term -> number .)
+    ;               reduce using rule 7 (term -> number .)
+    ,               reduce using rule 7 (term -> number .)
 
 
 state 7
@@ -213,20 +145,20 @@ state 7
 
     plus            reduce using rule 8 (term -> string .)
     times           reduce using rule 8 (term -> string .)
-    semicolon       reduce using rule 8 (term -> string .)
-    comma           reduce using rule 8 (term -> string .)
+    ;               reduce using rule 8 (term -> string .)
+    ,               reduce using rule 8 (term -> string .)
 
 
 state 8
 
-    (1) statement -> stdout arguments semicolon .
+    (1) statement -> keyword arguments ; .
 
-    $end            reduce using rule 1 (statement -> stdout arguments semicolon .)
+    $end            reduce using rule 1 (statement -> keyword arguments ; .)
 
 
 state 9
 
-    (2) arguments -> arguments comma . expression
+    (2) arguments -> arguments , . expression
     (4) expression -> . expression plus term
     (5) expression -> . expression times term
     (6) expression -> . term
@@ -263,12 +195,12 @@ state 11
 
 state 12
 
-    (2) arguments -> arguments comma expression .
+    (2) arguments -> arguments , expression .
     (4) expression -> expression . plus term
     (5) expression -> expression . times term
 
-    semicolon       reduce using rule 2 (arguments -> arguments comma expression .)
-    comma           reduce using rule 2 (arguments -> arguments comma expression .)
+    ;               reduce using rule 2 (arguments -> arguments , expression .)
+    ,               reduce using rule 2 (arguments -> arguments , expression .)
     plus            shift and go to state 10
     times           shift and go to state 11
 
@@ -279,8 +211,8 @@ state 13
 
     plus            reduce using rule 4 (expression -> expression plus term .)
     times           reduce using rule 4 (expression -> expression plus term .)
-    semicolon       reduce using rule 4 (expression -> expression plus term .)
-    comma           reduce using rule 4 (expression -> expression plus term .)
+    ;               reduce using rule 4 (expression -> expression plus term .)
+    ,               reduce using rule 4 (expression -> expression plus term .)
 
 
 state 14
@@ -289,6 +221,6 @@ state 14
 
     plus            reduce using rule 5 (expression -> expression times term .)
     times           reduce using rule 5 (expression -> expression times term .)
-    semicolon       reduce using rule 5 (expression -> expression times term .)
-    comma           reduce using rule 5 (expression -> expression times term .)
+    ;               reduce using rule 5 (expression -> expression times term .)
+    ,               reduce using rule 5 (expression -> expression times term .)
 

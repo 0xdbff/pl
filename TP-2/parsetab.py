@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'and auto break case char comma const continue default do double else enum extern float fn for goto if in int int16_t int32_t int64_t int8_t long not number or plus register return semicolon short signed size_t sizeof ssize_t static stdin stdout string struct switch times typeodef uint16_t uint32_t uint64_t uint8_t union unsigned var void volatile whilestatement : stdout arguments semicolonarguments : arguments comma expression\n        | expressionexpression : expression plus term\n        | expression times term\n        | termterm : number\n        | string'
+_lr_signature = "and break const continue fn for identifier in keyword not number or plus return stdin stdout string times var whilestatement : keyword arguments ';'arguments : arguments ',' expression\n        | expressionexpression : expression plus term\n        | expression times term\n        | termterm : number\n        | string"
     
-_lr_action_items = {'stdout':([0,],[2,]),'$end':([1,8,],[0,-1,]),'number':([2,9,10,11,],[6,6,6,6,]),'string':([2,9,10,11,],[7,7,7,7,]),'semicolon':([3,4,5,6,7,12,13,14,],[8,-3,-6,-7,-8,-2,-4,-5,]),'comma':([3,4,5,6,7,12,13,14,],[9,-3,-6,-7,-8,-2,-4,-5,]),'plus':([4,5,6,7,12,13,14,],[10,-6,-7,-8,10,-4,-5,]),'times':([4,5,6,7,12,13,14,],[11,-6,-7,-8,11,-4,-5,]),}
+_lr_action_items = {'keyword':([0,],[2,]),'$end':([1,8,],[0,-1,]),'number':([2,9,10,11,],[6,6,6,6,]),'string':([2,9,10,11,],[7,7,7,7,]),';':([3,4,5,6,7,12,13,14,],[8,-3,-6,-7,-8,-2,-4,-5,]),',':([3,4,5,6,7,12,13,14,],[9,-3,-6,-7,-8,-2,-4,-5,]),'plus':([4,5,6,7,12,13,14,],[10,-6,-7,-8,10,-4,-5,]),'times':([4,5,6,7,12,13,14,],[11,-6,-7,-8,11,-4,-5,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -27,12 +27,12 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> statement","S'",1,None,None,None),
-  ('statement -> stdout arguments semicolon','statement',3,'p_statement','rename.py',130),
-  ('arguments -> arguments comma expression','arguments',3,'p_arguments','rename.py',134),
-  ('arguments -> expression','arguments',1,'p_arguments','rename.py',135),
-  ('expression -> expression plus term','expression',3,'p_expression','rename.py',142),
-  ('expression -> expression times term','expression',3,'p_expression','rename.py',143),
-  ('expression -> term','expression',1,'p_expression','rename.py',144),
-  ('term -> number','term',1,'p_term','rename.py',151),
-  ('term -> string','term',1,'p_term','rename.py',152),
+  ('statement -> keyword arguments ;','statement',3,'p_statement','rename.py',110),
+  ('arguments -> arguments , expression','arguments',3,'p_arguments','rename.py',114),
+  ('arguments -> expression','arguments',1,'p_arguments','rename.py',115),
+  ('expression -> expression plus term','expression',3,'p_expression','rename.py',122),
+  ('expression -> expression times term','expression',3,'p_expression','rename.py',123),
+  ('expression -> term','expression',1,'p_expression','rename.py',124),
+  ('term -> number','term',1,'p_term','rename.py',131),
+  ('term -> string','term',1,'p_term','rename.py',132),
 ]

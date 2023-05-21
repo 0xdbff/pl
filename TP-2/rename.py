@@ -3,15 +3,18 @@ import ply.lex as lex
 from graphviz import Digraph
 import os
 import copy
+from reserved import reserved as py_c_keywords
 
 
 class Interpreter:
+    reserved = py_c_keywords
+
     keywords = {
         "stdout": "stdout",
-        "variable": "var",
-        "constant": "const",
+        "var": "var",
+        "const": "const",
         "stdin": "stdin",
-        "function": "fn",
+        "fn": "fn",
         "return": "return",
         "while": "while",
         "for": "for",
@@ -26,28 +29,49 @@ class Interpreter:
     tokens = [
         "string",
         "number",
-        "comma",
-        "semicolon",
+        # "comma",
+        # "semicolon",
         "times",
         "plus",
+        "identifier",
+        "keyword",
     ] + list(keywords.values())
 
+    literals = ["{", "}", "+", "-", "*", "/", ">", "<", "&", "|"]
     t_ignore = " \t"
 
+    @lex.TOKEN(r"[a-zA-Z_][a-zA-Z_0-9]*")
     def t_identifier(self, t):
-        r"[a-zA-Z_][a-zA-Z_0-9]*"
-        t.type = self.keywords.get(t.value, "stdout")
-        return t
+        try:
+            if self.keywords.get(t.value) is not None:
+                t.type = "keyword"
+            elif self.reserved.get(t.value) is not None:
+                t.type = "identifier"
+            else:
+                raise ValueError(
+                    "The token is not a valid identifier or keyword, "
+                    "check the list of reserved keywords!"
+                )
+            print(t.type)
+            print(t.value)
+            return t
+        except ValueError as e:
+            print(e)
 
+    @lex.TOKEN(r'"[^"]*"')
     def t_string(self, t):
-        r'"[^"]*"'
-        t.value = t.value[1:-1]
-        return t
+        try:
+            t.value = t.value[1:-1]
+            return t
+        except ValueError as e:
+            print(e)
 
-    @lex.TOKEN(r"-?0[bB][01]+|-?0[oO][0-7]+|-?0[xX][0-9a-fA-F]+|-?\d+\.\d+|-?\d+")
+    @lex.TOKEN(
+        r"-?0[bB][01]+|-?0[oO][0-7]+|-?0[xX][0-9a-fA-F]+|-?\d+(\.\d+)?(e[-+]?\d+)?"
+    )
     def t_number(self, t):
         try:
-            if "." in t.value:
+            if "e" in t.value or "." in t.value:
                 t.value = float(t.value)
             elif t.value.lower().startswith("0b"):
                 t.value = int(t.value, 2)
@@ -61,8 +85,8 @@ class Interpreter:
             print(f"Could not parse number: {t.value}")
         return t
 
-    t_comma = r","
-    t_semicolon = r";"
+    # t_comma = r","
+    # t_semicolon = r";"
     t_times = r"\*"
     t_plus = r"\+"
 
@@ -83,11 +107,11 @@ class Interpreter:
         t.lexer.skip(1)
 
     def p_statement(self, p):
-        "statement : stdout arguments semicolon"
+        "statement : keyword arguments ';'"
         p[0] = Node("statement", [p[2]])
 
     def p_arguments(self, p):
-        """arguments : arguments comma expression
+        """arguments : arguments ',' expression
         | expression"""
         if len(p) == 2:
             p[0] = Node("arguments", [p[1]])
