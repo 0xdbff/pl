@@ -2,21 +2,7 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
 Unused terminals:
 
-    and
-    break
-    const
-    continue
-    fn
-    for
     identifier
-    in
-    not
-    or
-    return
-    stdin
-    stdout
-    var
-    while
 
 Grammar
 
@@ -24,37 +10,23 @@ Rule 0     S' -> statement
 Rule 1     statement -> keyword arguments ;
 Rule 2     arguments -> arguments , expression
 Rule 3     arguments -> expression
-Rule 4     expression -> expression plus term
-Rule 5     expression -> expression times term
+Rule 4     expression -> expression + term
+Rule 5     expression -> expression * term
 Rule 6     expression -> term
 Rule 7     term -> number
 Rule 8     term -> string
 
 Terminals, with rules where they appear
 
+*                    : 5
++                    : 4
 ,                    : 2
 ;                    : 1
-and                  : 
-break                : 
-const                : 
-continue             : 
 error                : 
-fn                   : 
-for                  : 
 identifier           : 
-in                   : 
 keyword              : 1
-not                  : 
 number               : 7
-or                   : 
-plus                 : 4
-return               : 
-stdin                : 
-stdout               : 
 string               : 8
-times                : 5
-var                  : 
-while                : 
 
 Nonterminals, with rules where they appear
 
@@ -85,8 +57,8 @@ state 2
     (1) statement -> keyword . arguments ;
     (2) arguments -> . arguments , expression
     (3) arguments -> . expression
-    (4) expression -> . expression plus term
-    (5) expression -> . expression times term
+    (4) expression -> . expression + term
+    (5) expression -> . expression * term
     (6) expression -> . term
     (7) term -> . number
     (8) term -> . string
@@ -110,21 +82,21 @@ state 3
 state 4
 
     (3) arguments -> expression .
-    (4) expression -> expression . plus term
-    (5) expression -> expression . times term
+    (4) expression -> expression . + term
+    (5) expression -> expression . * term
 
     ;               reduce using rule 3 (arguments -> expression .)
     ,               reduce using rule 3 (arguments -> expression .)
-    plus            shift and go to state 10
-    times           shift and go to state 11
+    +               shift and go to state 10
+    *               shift and go to state 11
 
 
 state 5
 
     (6) expression -> term .
 
-    plus            reduce using rule 6 (expression -> term .)
-    times           reduce using rule 6 (expression -> term .)
+    +               reduce using rule 6 (expression -> term .)
+    *               reduce using rule 6 (expression -> term .)
     ;               reduce using rule 6 (expression -> term .)
     ,               reduce using rule 6 (expression -> term .)
 
@@ -133,8 +105,8 @@ state 6
 
     (7) term -> number .
 
-    plus            reduce using rule 7 (term -> number .)
-    times           reduce using rule 7 (term -> number .)
+    +               reduce using rule 7 (term -> number .)
+    *               reduce using rule 7 (term -> number .)
     ;               reduce using rule 7 (term -> number .)
     ,               reduce using rule 7 (term -> number .)
 
@@ -143,8 +115,8 @@ state 7
 
     (8) term -> string .
 
-    plus            reduce using rule 8 (term -> string .)
-    times           reduce using rule 8 (term -> string .)
+    +               reduce using rule 8 (term -> string .)
+    *               reduce using rule 8 (term -> string .)
     ;               reduce using rule 8 (term -> string .)
     ,               reduce using rule 8 (term -> string .)
 
@@ -159,8 +131,8 @@ state 8
 state 9
 
     (2) arguments -> arguments , . expression
-    (4) expression -> . expression plus term
-    (5) expression -> . expression times term
+    (4) expression -> . expression + term
+    (5) expression -> . expression * term
     (6) expression -> . term
     (7) term -> . number
     (8) term -> . string
@@ -173,7 +145,7 @@ state 9
 
 state 10
 
-    (4) expression -> expression plus . term
+    (4) expression -> expression + . term
     (7) term -> . number
     (8) term -> . string
 
@@ -184,7 +156,7 @@ state 10
 
 state 11
 
-    (5) expression -> expression times . term
+    (5) expression -> expression * . term
     (7) term -> . number
     (8) term -> . string
 
@@ -196,31 +168,31 @@ state 11
 state 12
 
     (2) arguments -> arguments , expression .
-    (4) expression -> expression . plus term
-    (5) expression -> expression . times term
+    (4) expression -> expression . + term
+    (5) expression -> expression . * term
 
     ;               reduce using rule 2 (arguments -> arguments , expression .)
     ,               reduce using rule 2 (arguments -> arguments , expression .)
-    plus            shift and go to state 10
-    times           shift and go to state 11
+    +               shift and go to state 10
+    *               shift and go to state 11
 
 
 state 13
 
-    (4) expression -> expression plus term .
+    (4) expression -> expression + term .
 
-    plus            reduce using rule 4 (expression -> expression plus term .)
-    times           reduce using rule 4 (expression -> expression plus term .)
-    ;               reduce using rule 4 (expression -> expression plus term .)
-    ,               reduce using rule 4 (expression -> expression plus term .)
+    +               reduce using rule 4 (expression -> expression + term .)
+    *               reduce using rule 4 (expression -> expression + term .)
+    ;               reduce using rule 4 (expression -> expression + term .)
+    ,               reduce using rule 4 (expression -> expression + term .)
 
 
 state 14
 
-    (5) expression -> expression times term .
+    (5) expression -> expression * term .
 
-    plus            reduce using rule 5 (expression -> expression times term .)
-    times           reduce using rule 5 (expression -> expression times term .)
-    ;               reduce using rule 5 (expression -> expression times term .)
-    ,               reduce using rule 5 (expression -> expression times term .)
+    +               reduce using rule 5 (expression -> expression * term .)
+    *               reduce using rule 5 (expression -> expression * term .)
+    ;               reduce using rule 5 (expression -> expression * term .)
+    ,               reduce using rule 5 (expression -> expression * term .)
 

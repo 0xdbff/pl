@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = "and break const continue fn for identifier in keyword not number or plus return stdin stdout string times var whilestatement : keyword arguments ';'arguments : arguments ',' expression\n        | expressionexpression : expression plus term\n        | expression times term\n        | termterm : number\n        | string"
+_lr_signature = "identifier keyword number stringstatement : keyword arguments ';'arguments : arguments ',' expression\n        | expressionexpression : expression '+' term\n        | expression '*' term\n        | termterm : number\n        | string"
     
-_lr_action_items = {'keyword':([0,],[2,]),'$end':([1,8,],[0,-1,]),'number':([2,9,10,11,],[6,6,6,6,]),'string':([2,9,10,11,],[7,7,7,7,]),';':([3,4,5,6,7,12,13,14,],[8,-3,-6,-7,-8,-2,-4,-5,]),',':([3,4,5,6,7,12,13,14,],[9,-3,-6,-7,-8,-2,-4,-5,]),'plus':([4,5,6,7,12,13,14,],[10,-6,-7,-8,10,-4,-5,]),'times':([4,5,6,7,12,13,14,],[11,-6,-7,-8,11,-4,-5,]),}
+_lr_action_items = {'keyword':([0,],[2,]),'$end':([1,8,],[0,-1,]),'number':([2,9,10,11,],[6,6,6,6,]),'string':([2,9,10,11,],[7,7,7,7,]),';':([3,4,5,6,7,12,13,14,],[8,-3,-6,-7,-8,-2,-4,-5,]),',':([3,4,5,6,7,12,13,14,],[9,-3,-6,-7,-8,-2,-4,-5,]),'+':([4,5,6,7,12,13,14,],[10,-6,-7,-8,10,-4,-5,]),'*':([4,5,6,7,12,13,14,],[11,-6,-7,-8,11,-4,-5,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -27,12 +27,12 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> statement","S'",1,None,None,None),
-  ('statement -> keyword arguments ;','statement',3,'p_statement','rename.py',110),
-  ('arguments -> arguments , expression','arguments',3,'p_arguments','rename.py',114),
-  ('arguments -> expression','arguments',1,'p_arguments','rename.py',115),
-  ('expression -> expression plus term','expression',3,'p_expression','rename.py',122),
-  ('expression -> expression times term','expression',3,'p_expression','rename.py',123),
-  ('expression -> term','expression',1,'p_expression','rename.py',124),
-  ('term -> number','term',1,'p_term','rename.py',131),
-  ('term -> string','term',1,'p_term','rename.py',132),
+  ('statement -> keyword arguments ;','statement',3,'p_statement','grammar.py',17),
+  ('arguments -> arguments , expression','arguments',3,'p_arguments','grammar.py',21),
+  ('arguments -> expression','arguments',1,'p_arguments','grammar.py',22),
+  ('expression -> expression + term','expression',3,'p_expression','grammar.py',29),
+  ('expression -> expression * term','expression',3,'p_expression','grammar.py',30),
+  ('expression -> term','expression',1,'p_expression','grammar.py',31),
+  ('term -> number','term',1,'p_term','grammar.py',38),
+  ('term -> string','term',1,'p_term','grammar.py',39),
 ]

@@ -1,3 +1,3 @@
-import rename
+import interpreter
 
-rename.main()
+interpreter.main()
