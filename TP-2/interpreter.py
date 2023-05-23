@@ -20,46 +20,48 @@ class Interpreter:
     def _build_ast(self, s):
         tree = self.parser.build_ast(s)
         if tree is not None:
-            self.process_tree(tree)
+            print(self.eval(tree))
             tree.build_graph()
 
-    def process_tree(self, tree):
-        if tree.type == "statement":
-            if tree.children[0].type == "arguments":
-                for arg in tree.children[0].children:
-                    self.process_argument(arg)
+    def eval(self, node):
+        """Dispatch method that calls the appropriate method based on node type."""
+        method_name = f"eval_{node.type}"
+        if hasattr(self, method_name):
+            method = getattr(self, method_name)
+            return method(node)
+        else:
+            raise ValueError(f"Unknown node type: {node.type}")
 
-    def process_argument(self, arg):
-        if arg.type == "term":
-            self.process_term(arg)
-        elif arg.type == "expression":
-            self.process_expression(arg)
+    def eval_number(self, node):
+        return node.value
 
-    def process_term(self, term):
-        print(term.children[0])
+    def eval_name(self, node):
+        return self.parser.names[node.value]
 
-    def process_expression(self, expr):
-        op = expr.children[2]
-        left = expr.children[0]
-        right = expr.children[1]
+    def eval_binop(self, node):
+        left = self.eval(node.children[0])
+        right = self.eval(node.children[1])
+        if node.value == "+":
+            return left + right
+        elif node.value == "-":
+            return left - right
+        elif node.value == "*":
+            return left * right
+        elif node.value == "/":
+            return left / right
 
-        left_val = None
-        right_val = None
+    def eval_uminus(self, node):
+        return -self.eval(node.children[0])
 
-        if left.type == "term":
-            left_val = left.children[0]
-        elif left.type == "expression":
-            left_val = self.process_expression(left)
+    def eval_assign(self, node):
+        self.parser.names[node.value] = self.eval(node.children[0])
+        return self.parser.names[node.value]
 
-        if right.type == "term":
-            right_val = right.children[0]
-        elif right.type == "expression":
-            right_val = self.process_expression(right)
-        if left_val is not None and right_val is not None:
-            if op == "+":
-                print(left_val + right_val)
-            elif op == "*":
-                print(left_val * right_val)
+    def eval_statement(self, node):
+        return self.eval(node.children[0])
+
+    def eval_group(self, node):
+        return self.eval(node.children[0])
 
 
 def main():
