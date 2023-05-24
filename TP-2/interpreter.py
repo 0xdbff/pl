@@ -21,7 +21,8 @@ class Interpreter:
         try:
             root = self.parser.build_ast(s)
             if root is not None:
-                root.traverse()
+                print(root)
+                # root.traverse()
                 self.eval(root)
                 root.build_graph()
         except Exception as e:
@@ -77,6 +78,14 @@ class Interpreter:
         return self.eval(node.children[0])
 
     def eval_expression(self, node):
+        return self.eval(node.children[0])
+
+    def eval_arguments(self, node):
+        """
+        Evaluate arguments node type.
+        This assumes that the children of an arguments node are expressions
+        that can be evaluated.
+        """
         return [self.eval(child) for child in node.children]
 
     def eval_group(self, node):
@@ -87,17 +96,38 @@ class Interpreter:
             for child in node.children:
                 try:
                     values = self.eval(child)
-                    for value in values:
-                        print(value, end=" ")
-                    print()
+                    if isinstance(values, list):
+                        print(f"{values}"[1:-1])
+                    else:
+                        print(values)
                 except Exception as e:
                     print(f"Exception when evaluating print argument: {e}")
         else:
             print(node.value)
 
+    # def eval_var(self, node):
+    #     self.parser.vars[node.value] = self.eval(node.children[0])
+    #     return self.parser.vars[node.value]
+
     def eval_var(self, node):
-        self.parser.vars[node.value] = self.eval(node.children[0])
-        return self.parser.vars[node.value]
+        return self.eval(node.children[0])
+
+    def eval_var_declaration_list(self, node):
+        for child in node.children:
+            self.eval(child)
+
+    def eval_var_declaration(self, node):
+        if node.children:
+            self.parser.vars[node.value] = self.eval(node.children[0])
+        else:
+            self.parser.vars[node.value] = None
+
+    def eval_set_var(self, node):
+        if node.children[0].value not in self.parser.vars:
+            #     self.parser.vars[node.value] = self.eval(node.children[0])
+            # else:
+            raise NameError(f"Variable '{node.children[0].value}' is not defined")
+        return self.eval(node.children[0])
 
     def eval_string(self, node):
         return node.value

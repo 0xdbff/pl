@@ -1,7 +1,5 @@
 import ply.yacc as yacc
-import ply.lex as lex
 from node import Node
-from lexer import Lexer
 
 
 class Grammar:
@@ -24,20 +22,47 @@ class Grammar:
         """statement : PRINT arguments"""
         p[0] = Node("print", children=[p[2]])
 
+    def p_statemnet_setvar(self, p):
+        """statement : var_declaration"""
+        p[0] = Node("set_var", children=[p[1]])
+
     def p_arguments_expression(self, p):
         """arguments : arguments ',' expression
         | expression"""
         if len(p) > 2:
-            p[1].children.append(p[3])
-            p[0] = p[1]
+            p[0] = Node(
+                "arguments",
+                children=[*p[1].children, Node("expression", children=[p[3]])],
+            )
         else:
-            p[0] = Node("expression", children=[p[1]])
+            p[0] = Node("arguments", children=[Node("expression", children=[p[1]])])
 
+    # def p_statement_var(self, p):
+    #     """statement : VAR NAME "=" expression
+    #     | VAR NAME
+    #     | """
+    #     self.vars[p[2]] = p[4]
+    #     p[0] = Node("var", value=p[2], children=[p[4]])
 
     def p_statement_var(self, p):
-        'statement : VAR NAME "=" expression'
-        self.vars[p[2]] = p[4]
-        p[0] = Node("var", value=p[2], children=[p[4]])
+        """statement : VAR var_declaration_list"""
+        p[0] = Node("var", children=[p[2]])
+
+    def p_var_declaration_list(self, p):
+        """var_declaration_list : var_declaration_list ',' var_declaration
+        | var_declaration"""
+        if len(p) > 2:
+            p[0] = Node("var_declaration_list", children=[*p[1].children, p[3]])
+        else:
+            p[0] = Node("var_declaration_list", children=[p[1]])
+
+    def p_var_declaration(self, p):
+        """var_declaration : NAME '=' expression
+        | NAME"""
+        if len(p) > 2:
+            p[0] = Node("var_declaration", value=p[1], children=[p[3]])
+        else:
+            p[0] = Node("var_declaration", value=p[1])
 
     def p_expression_binop(self, p):
         """expression : expression '+' expression

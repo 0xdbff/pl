@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'left+-left*/rightUMINUSNAME NUMBER PRINT STRING VARstatement : PRINT argumentsarguments : arguments \',\' expression\n        | expressionstatement : VAR NAME "=" expressionexpression : expression \'+\' expression\n        | expression \'-\' expression\n        | expression \'*\' expression\n        | expression \'/\' expressionexpression : \'-\' expression %prec UMINUSexpression : \'(\' expression \')\'expression : NUMBERexpression : NAMEexpression : STRING'
+_lr_signature = "left+-left*/rightUMINUSNAME NUMBER PRINT STRING VARstatement : PRINT argumentsstatement : var_declarationarguments : arguments ',' expression\n        | expressionstatement : VAR var_declaration_listvar_declaration_list : var_declaration_list ',' var_declaration\n        | var_declarationvar_declaration : NAME '=' expression\n        | NAMEexpression : expression '+' expression\n        | expression '-' expression\n        | expression '*' expression\n        | expression '/' expressionexpression : '-' expression %prec UMINUSexpression : '(' expression ')'expression : NUMBERexpression : NAMEexpression : STRING"
     
-_lr_action_items = {'PRINT':([0,],[2,]),'VAR':([0,],[3,]),'$end':([1,4,5,8,9,10,17,20,21,22,23,24,25,26,],[0,-1,-3,-11,-12,-13,-9,-2,-5,-6,-7,-8,-10,-4,]),'-':([2,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,],[6,14,6,6,-11,-12,-13,6,6,6,6,6,-9,14,6,14,-5,-6,-7,-8,-10,14,]),'(':([2,6,7,12,13,14,15,16,19,],[7,7,7,7,7,7,7,7,7,]),'NUMBER':([2,6,7,12,13,14,15,16,19,],[8,8,8,8,8,8,8,8,8,]),'NAME':([2,3,6,7,12,13,14,15,16,19,],[9,11,9,9,9,9,9,9,9,9,]),'STRING':([2,6,7,12,13,14,15,16,19,],[10,10,10,10,10,10,10,10,10,]),',':([4,5,8,9,10,17,20,21,22,23,24,25,],[12,-3,-11,-12,-13,-9,-2,-5,-6,-7,-8,-10,]),'+':([5,8,9,10,17,18,20,21,22,23,24,25,26,],[13,-11,-12,-13,-9,13,13,-5,-6,-7,-8,-10,13,]),'*':([5,8,9,10,17,18,20,21,22,23,24,25,26,],[15,-11,-12,-13,-9,15,15,15,15,-7,-8,-10,15,]),'/':([5,8,9,10,17,18,20,21,22,23,24,25,26,],[16,-11,-12,-13,-9,16,16,16,16,-7,-8,-10,16,]),')':([8,9,10,17,18,21,22,23,24,25,],[-11,-12,-13,-9,25,-5,-6,-7,-8,-10,]),'=':([11,],[19,]),}
+_lr_action_items = {'PRINT':([0,],[2,]),'VAR':([0,],[4,]),'NAME':([0,2,4,8,9,15,16,17,18,19,20,23,],[5,11,5,11,11,11,11,11,11,11,11,5,]),'$end':([1,3,5,6,7,10,11,12,13,14,21,24,25,26,27,28,29,30,31,],[0,-2,-9,-1,-4,-16,-17,-18,-5,-7,-14,-8,-3,-10,-11,-12,-13,-15,-6,]),'-':([2,7,8,9,10,11,12,15,16,17,18,19,20,21,22,24,25,26,27,28,29,30,],[8,18,8,8,-16,-17,-18,8,8,8,8,8,8,-14,18,18,18,-10,-11,-12,-13,-15,]),'(':([2,8,9,15,16,17,18,19,20,],[9,9,9,9,9,9,9,9,9,]),'NUMBER':([2,8,9,15,16,17,18,19,20,],[10,10,10,10,10,10,10,10,10,]),'STRING':([2,8,9,15,16,17,18,19,20,],[12,12,12,12,12,12,12,12,12,]),'=':([5,],[15,]),',':([5,6,7,10,11,12,13,14,21,24,25,26,27,28,29,30,31,],[-9,16,-4,-16,-17,-18,23,-7,-14,-8,-3,-10,-11,-12,-13,-15,-6,]),'+':([7,10,11,12,21,22,24,25,26,27,28,29,30,],[17,-16,-17,-18,-14,17,17,17,-10,-11,-12,-13,-15,]),'*':([7,10,11,12,21,22,24,25,26,27,28,29,30,],[19,-16,-17,-18,-14,19,19,19,19,19,-12,-13,-15,]),'/':([7,10,11,12,21,22,24,25,26,27,28,29,30,],[20,-16,-17,-18,-14,20,20,20,20,20,-12,-13,-15,]),')':([10,11,12,21,22,26,27,28,29,30,],[-16,-17,-18,-14,30,-10,-11,-12,-13,-15,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'statement':([0,],[1,]),'arguments':([2,],[4,]),'expression':([2,6,7,12,13,14,15,16,19,],[5,17,18,20,21,22,23,24,26,]),}
+_lr_goto_items = {'statement':([0,],[1,]),'var_declaration':([0,4,23,],[3,14,31,]),'arguments':([2,],[6,]),'expression':([2,8,9,15,16,17,18,19,20,],[7,21,22,24,25,26,27,28,29,]),'var_declaration_list':([4,],[13,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,17 +27,22 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> statement","S'",1,None,None,None),
-  ('statement -> PRINT arguments','statement',2,'p_statement_print','grammar.py',24),
-  ('arguments -> arguments , expression','arguments',3,'p_arguments_expression','grammar.py',28),
-  ('arguments -> expression','arguments',1,'p_arguments_expression','grammar.py',29),
-  ('statement -> VAR NAME = expression','statement',4,'p_statement_var','grammar.py',36),
-  ('expression -> expression + expression','expression',3,'p_expression_binop','grammar.py',41),
-  ('expression -> expression - expression','expression',3,'p_expression_binop','grammar.py',42),
-  ('expression -> expression * expression','expression',3,'p_expression_binop','grammar.py',43),
-  ('expression -> expression / expression','expression',3,'p_expression_binop','grammar.py',44),
-  ('expression -> - expression','expression',2,'p_expression_uminus','grammar.py',48),
-  ('expression -> ( expression )','expression',3,'p_expression_group','grammar.py',52),
-  ('expression -> NUMBER','expression',1,'p_expression_number','grammar.py',56),
-  ('expression -> NAME','expression',1,'p_expression_name','grammar.py',60),
-  ('expression -> STRING','expression',1,'p_expression_string','grammar.py',64),
+  ('statement -> PRINT arguments','statement',2,'p_statement_print','grammar.py',22),
+  ('statement -> var_declaration','statement',1,'p_statemnet_setvar','grammar.py',26),
+  ('arguments -> arguments , expression','arguments',3,'p_arguments_expression','grammar.py',30),
+  ('arguments -> expression','arguments',1,'p_arguments_expression','grammar.py',31),
+  ('statement -> VAR var_declaration_list','statement',2,'p_statement_var','grammar.py',48),
+  ('var_declaration_list -> var_declaration_list , var_declaration','var_declaration_list',3,'p_var_declaration_list','grammar.py',52),
+  ('var_declaration_list -> var_declaration','var_declaration_list',1,'p_var_declaration_list','grammar.py',53),
+  ('var_declaration -> NAME = expression','var_declaration',3,'p_var_declaration','grammar.py',60),
+  ('var_declaration -> NAME','var_declaration',1,'p_var_declaration','grammar.py',61),
+  ('expression -> expression + expression','expression',3,'p_expression_binop','grammar.py',68),
+  ('expression -> expression - expression','expression',3,'p_expression_binop','grammar.py',69),
+  ('expression -> expression * expression','expression',3,'p_expression_binop','grammar.py',70),
+  ('expression -> expression / expression','expression',3,'p_expression_binop','grammar.py',71),
+  ('expression -> - expression','expression',2,'p_expression_uminus','grammar.py',75),
+  ('expression -> ( expression )','expression',3,'p_expression_group','grammar.py',79),
+  ('expression -> NUMBER','expression',1,'p_expression_number','grammar.py',83),
+  ('expression -> NAME','expression',1,'p_expression_name','grammar.py',87),
+  ('expression -> STRING','expression',1,'p_expression_string','grammar.py',91),
 ]
