@@ -22,7 +22,7 @@ class Node:
                                              Default is an empty list.
         """
         self.type = type
-        self.value = value if value is not None else 'eval'
+        self.value = value if value is not None else ""
         self.children = children if children is not None else []
 
     def _to_graphviz(self, g=None):

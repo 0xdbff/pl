@@ -5,12 +5,12 @@ from reserved import reserved as py_c_keywords
 class Lexer:
     reserved = py_c_keywords
 
-    keywords = {"print": "PRINT", "var": "VAR"}
+    keywords = {"print": "PRINT", "var": "VAR", "fn": "FN"}
 
     def __init__(self, **kwargs):
         self.lexer = lex.lex(module=self, **kwargs)
 
-    tokens = ["NAME", "NUMBER", "STRING"] + list(keywords.values())
+    tokens = ["NAME", "NUMBER", "STRING", "DTYPE"] + list(keywords.values())
 
     literals = ["=", "+", "-", "*", "/", "(", ")", ","]
 
@@ -102,9 +102,6 @@ class Lexer:
     # literals = ["{", "}", "+", "-", "*", "/", ">", "<", "&", "|", ";", ","]
     # t_ignore = " \t"
 
-    #
-    #
-    #
     # @staticmethod
     # @lex.TOKEN(r"//.*")
     # def t_comment(t):

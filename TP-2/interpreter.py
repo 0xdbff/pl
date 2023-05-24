@@ -21,7 +21,7 @@ class Interpreter:
         try:
             root = self.parser.build_ast(s)
             if root is not None:
-                print(root)
+                # print(root)
                 # root.traverse()
                 self.eval(root)
                 root.build_graph()
@@ -47,7 +47,7 @@ class Interpreter:
         try:
             return self.parser.vars[node.value]
         except KeyError:
-            raise NameError(f"Variable '{node.value}' is not defined")
+            raise NameError(f"Identifier '{node.value}' is not defined")
 
     def eval_binop(self, node):
         left = self.eval(node.children[0])
@@ -124,8 +124,6 @@ class Interpreter:
 
     def eval_set_var(self, node):
         if node.children[0].value not in self.parser.vars:
-            #     self.parser.vars[node.value] = self.eval(node.children[0])
-            # else:
             raise NameError(f"Variable '{node.children[0].value}' is not defined")
         return self.eval(node.children[0])
 
