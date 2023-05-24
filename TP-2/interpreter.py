@@ -18,10 +18,14 @@ class Interpreter:
             self._build_ast(s)
 
     def _build_ast(self, s):
-        root = self.parser.build_ast(s)
-        if root is not None:
-            print(self.eval(root))
-            root.build_graph()
+        try:
+            root = self.parser.build_ast(s)
+            if root is not None:
+                root.traverse()
+                self.eval(root)
+                root.build_graph()
+        except Exception as e:
+            print(e)
 
     def eval(self, node):
         """
@@ -39,11 +43,18 @@ class Interpreter:
         return node.value
 
     def eval_name(self, node):
-        return self.parser.vars[node.value]
+        try:
+            return self.parser.vars[node.value]
+        except KeyError:
+            raise NameError(f"Variable '{node.value}' is not defined")
 
     def eval_binop(self, node):
         left = self.eval(node.children[0])
         right = self.eval(node.children[1])
+
+        if not isinstance(left, (int, float)) or not isinstance(right, (int, float)):
+            raise ValueError("Both operands must be numbers")
+
         if node.value == "+":
             return left + right
         elif node.value == "-":
@@ -51,6 +62,8 @@ class Interpreter:
         elif node.value == "*":
             return left * right
         elif node.value == "/":
+            if right == 0:
+                raise ZeroDivisionError("Cannot divide by zero")
             return left / right
 
     def eval_uminus(self, node):
@@ -63,17 +76,31 @@ class Interpreter:
     def eval_statement(self, node):
         return self.eval(node.children[0])
 
+    def eval_expression(self, node):
+        return [self.eval(child) for child in node.children]
+
     def eval_group(self, node):
         return self.eval(node.children[0])
 
     def eval_print(self, node):
-        value = self.eval(node.children[0])
-        print(value)
-        return value
+        if node.children is not None:
+            for child in node.children:
+                try:
+                    values = self.eval(child)
+                    for value in values:
+                        print(value, end=" ")
+                    print()
+                except Exception as e:
+                    print(f"Exception when evaluating print argument: {e}")
+        else:
+            print(node.value)
 
     def eval_var(self, node):
         self.parser.vars[node.value] = self.eval(node.children[0])
         return self.parser.vars[node.value]
+
+    def eval_string(self, node):
+        return node.value
 
 
 def main():

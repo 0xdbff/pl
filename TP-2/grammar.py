@@ -21,17 +21,23 @@ class Grammar:
     vars = {}
 
     def p_statement_print(self, p):
-        "statement : PRINT expression"
+        """statement : PRINT arguments"""
         p[0] = Node("print", children=[p[2]])
+
+    def p_arguments_expression(self, p):
+        """arguments : arguments ',' expression
+        | expression"""
+        if len(p) > 2:
+            p[1].children.append(p[3])
+            p[0] = p[1]
+        else:
+            p[0] = Node("expression", children=[p[1]])
+
 
     def p_statement_var(self, p):
         'statement : VAR NAME "=" expression'
         self.vars[p[2]] = p[4]
         p[0] = Node("var", value=p[2], children=[p[4]])
-
-    def p_statement_expr(self, p):
-        "statement : expression"
-        p[0] = Node("statement", children=[p[1]])
 
     def p_expression_binop(self, p):
         """expression : expression '+' expression
@@ -55,6 +61,10 @@ class Grammar:
     def p_expression_name(self, p):
         "expression : NAME"
         p[0] = Node("name", value=p[1])
+
+    def p_expression_string(self, p):
+        "expression : STRING"
+        p[0] = Node("string", value=p[1])
 
     def p_error(self, p):
         if p:

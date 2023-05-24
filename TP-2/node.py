@@ -42,7 +42,10 @@ class Node:
             g = Digraph("g")
 
         name = f"{id(self)}"
-        g.node(name, label=f"{self.type}: {self.value}")
+        g.node(
+            name,
+            label=f"{self.type}: {self.value if self.value is not None else 'eval'}",
+        )
 
         for child in self.children:
             if isinstance(child, Node):

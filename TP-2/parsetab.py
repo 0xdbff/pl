@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'left+-left*/rightUMINUSNAME NUMBER PRINT VARstatement : PRINT expressionstatement : VAR NAME "=" expressionstatement : expressionexpression : expression \'+\' expression\n        | expression \'-\' expression\n        | expression \'*\' expression\n        | expression \'/\' expressionexpression : \'-\' expression %prec UMINUSexpression : \'(\' expression \')\'expression : NUMBERexpression : NAME'
+_lr_signature = 'left+-left*/rightUMINUSNAME NUMBER PRINT STRING VARstatement : PRINT argumentsarguments : arguments \',\' expression\n        | expressionstatement : VAR NAME "=" expressionexpression : expression \'+\' expression\n        | expression \'-\' expression\n        | expression \'*\' expression\n        | expression \'/\' expressionexpression : \'-\' expression %prec UMINUSexpression : \'(\' expression \')\'expression : NUMBERexpression : NAMEexpression : STRING'
     
-_lr_action_items = {'PRINT':([0,],[2,]),'VAR':([0,],[4,]),'-':([0,2,3,5,6,7,8,9,10,11,12,13,15,16,17,18,19,20,21,22,23,],[6,6,11,-11,6,6,-10,11,6,6,6,6,-8,11,-4,-5,-6,-7,6,-9,11,]),'(':([0,2,6,7,10,11,12,13,21,],[7,7,7,7,7,7,7,7,7,]),'NUMBER':([0,2,6,7,10,11,12,13,21,],[8,8,8,8,8,8,8,8,8,]),'NAME':([0,2,4,6,7,10,11,12,13,21,],[5,5,14,5,5,5,5,5,5,5,]),'$end':([1,3,5,8,9,15,17,18,19,20,22,23,],[0,-3,-11,-10,-1,-8,-4,-5,-6,-7,-9,-2,]),'+':([3,5,8,9,15,16,17,18,19,20,22,23,],[10,-11,-10,10,-8,10,-4,-5,-6,-7,-9,10,]),'*':([3,5,8,9,15,16,17,18,19,20,22,23,],[12,-11,-10,12,-8,12,12,12,-6,-7,-9,12,]),'/':([3,5,8,9,15,16,17,18,19,20,22,23,],[13,-11,-10,13,-8,13,13,13,-6,-7,-9,13,]),')':([5,8,15,16,17,18,19,20,22,],[-11,-10,-8,22,-4,-5,-6,-7,-9,]),'=':([14,],[21,]),}
+_lr_action_items = {'PRINT':([0,],[2,]),'VAR':([0,],[3,]),'$end':([1,4,5,8,9,10,17,20,21,22,23,24,25,26,],[0,-1,-3,-11,-12,-13,-9,-2,-5,-6,-7,-8,-10,-4,]),'-':([2,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,],[6,14,6,6,-11,-12,-13,6,6,6,6,6,-9,14,6,14,-5,-6,-7,-8,-10,14,]),'(':([2,6,7,12,13,14,15,16,19,],[7,7,7,7,7,7,7,7,7,]),'NUMBER':([2,6,7,12,13,14,15,16,19,],[8,8,8,8,8,8,8,8,8,]),'NAME':([2,3,6,7,12,13,14,15,16,19,],[9,11,9,9,9,9,9,9,9,9,]),'STRING':([2,6,7,12,13,14,15,16,19,],[10,10,10,10,10,10,10,10,10,]),',':([4,5,8,9,10,17,20,21,22,23,24,25,],[12,-3,-11,-12,-13,-9,-2,-5,-6,-7,-8,-10,]),'+':([5,8,9,10,17,18,20,21,22,23,24,25,26,],[13,-11,-12,-13,-9,13,13,-5,-6,-7,-8,-10,13,]),'*':([5,8,9,10,17,18,20,21,22,23,24,25,26,],[15,-11,-12,-13,-9,15,15,15,15,-7,-8,-10,15,]),'/':([5,8,9,10,17,18,20,21,22,23,24,25,26,],[16,-11,-12,-13,-9,16,16,16,16,-7,-8,-10,16,]),')':([8,9,10,17,18,21,22,23,24,25,],[-11,-12,-13,-9,25,-5,-6,-7,-8,-10,]),'=':([11,],[19,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'statement':([0,],[1,]),'expression':([0,2,6,7,10,11,12,13,21,],[3,9,15,16,17,18,19,20,23,]),}
+_lr_goto_items = {'statement':([0,],[1,]),'arguments':([2,],[4,]),'expression':([2,6,7,12,13,14,15,16,19,],[5,17,18,20,21,22,23,24,26,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,9 +27,10 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> statement","S'",1,None,None,None),
-  ('statement -> PRINT expression','statement',2,'p_statement_print','grammar.py',24),
-  ('statement -> VAR NAME = expression','statement',4,'p_statement_var','grammar.py',30),
-  ('statement -> expression','statement',1,'p_statement_expr','grammar.py',37),
+  ('statement -> PRINT arguments','statement',2,'p_statement_print','grammar.py',24),
+  ('arguments -> arguments , expression','arguments',3,'p_arguments_expression','grammar.py',28),
+  ('arguments -> expression','arguments',1,'p_arguments_expression','grammar.py',29),
+  ('statement -> VAR NAME = expression','statement',4,'p_statement_var','grammar.py',36),
   ('expression -> expression + expression','expression',3,'p_expression_binop','grammar.py',41),
   ('expression -> expression - expression','expression',3,'p_expression_binop','grammar.py',42),
   ('expression -> expression * expression','expression',3,'p_expression_binop','grammar.py',43),
@@ -38,4 +39,5 @@ _lr_productions = [
   ('expression -> ( expression )','expression',3,'p_expression_group','grammar.py',52),
   ('expression -> NUMBER','expression',1,'p_expression_number','grammar.py',56),
   ('expression -> NAME','expression',1,'p_expression_name','grammar.py',60),
+  ('expression -> STRING','expression',1,'p_expression_string','grammar.py',64),
 ]

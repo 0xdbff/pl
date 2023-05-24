@@ -10,9 +10,11 @@ class Lexer:
     def __init__(self, **kwargs):
         self.lexer = lex.lex(module=self, **kwargs)
 
-    tokens = ["NAME", "NUMBER"] + list(keywords.values())
+    tokens = ["NAME", "NUMBER", "STRING"] + list(keywords.values())
 
-    literals = ["=", "+", "-", "*", "/", "(", ")"]
+    literals = ["=", "+", "-", "*", "/", "(", ")", ","]
+
+    t_ignore = " \t"
 
     @lex.TOKEN(r"[a-zA-Z_][a-zA-Z_0-9]*")
     def t_NAME(self, t):
@@ -28,9 +30,7 @@ class Lexer:
         except ValueError as e:
             print(e)
 
-    @lex.TOKEN(
-        r"-?0[bB][01]+|-?0[oO][0-7]+|-?0[xX][0-9a-fA-F]+|-?\d+(\.\d+)?(e[-+]?\d+)?"
-    )
+    @lex.TOKEN(r"0[bB][01]+|0[oO][0-7]+|0[xX][0-9a-fA-F]+|\d+(\.\d+)?(e[-+]?\d+)?")
     def t_NUMBER(self, t):
         try:
             if "e" in t.value or "." in t.value:
@@ -47,7 +47,13 @@ class Lexer:
             print(f"Could not parse number: {t.value}")
         return t
 
-    t_ignore = " \t"
+    @lex.TOKEN(r'"[^"]*"')
+    def t_STRING(self, t):
+        try:
+            t.value = t.value[1:-1]
+            return t
+        except ValueError as e:
+            print(e)
 
     def t_newline(self, t):
         r"\n+"
@@ -98,17 +104,6 @@ class Lexer:
 
     #
     #
-    # @lex.TOKEN(r'"[^"]*"')
-    # def t_string(self, t):
-    #     try:
-    #         t.value = t.value[1:-1]
-    #         return t
-    #     except ValueError as e:
-    #         print(e)
-    #
-    # @lex.TOKEN(
-    #     r"-?0[bB][01]+|-?0[oO][0-7]+|-?0[xX][0-9a-fA-F]+|-?\d+(\.\d+)?(e[-+]?\d+)?"
-    # )
     #
     # @staticmethod
     # @lex.TOKEN(r"//.*")
