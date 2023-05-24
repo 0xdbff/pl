@@ -18,13 +18,16 @@ class Interpreter:
             self._build_ast(s)
 
     def _build_ast(self, s):
-        tree = self.parser.build_ast(s)
-        if tree is not None:
-            print(self.eval(tree))
-            tree.build_graph()
+        root = self.parser.build_ast(s)
+        if root is not None:
+            print(self.eval(root))
+            root.build_graph()
 
     def eval(self, node):
-        """Dispatch method that calls the appropriate method based on node type."""
+        """
+        Dispatch method that calls the appropriate method based on
+        node type.
+        """
         method_name = f"eval_{node.type}"
         if hasattr(self, method_name):
             method = getattr(self, method_name)
@@ -36,7 +39,7 @@ class Interpreter:
         return node.value
 
     def eval_name(self, node):
-        return self.parser.names[node.value]
+        return self.parser.vars[node.value]
 
     def eval_binop(self, node):
         left = self.eval(node.children[0])
@@ -54,14 +57,23 @@ class Interpreter:
         return -self.eval(node.children[0])
 
     def eval_assign(self, node):
-        self.parser.names[node.value] = self.eval(node.children[0])
-        return self.parser.names[node.value]
+        self.parser.vars[node.value] = self.eval(node.children[0])
+        return self.parser.vars[node.value]
 
     def eval_statement(self, node):
         return self.eval(node.children[0])
 
     def eval_group(self, node):
         return self.eval(node.children[0])
+
+    def eval_print(self, node):
+        value = self.eval(node.children[0])
+        print(value)
+        return value
+
+    def eval_var(self, node):
+        self.parser.vars[node.value] = self.eval(node.children[0])
+        return self.parser.vars[node.value]
 
 
 def main():

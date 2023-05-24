@@ -18,12 +18,16 @@ class Grammar:
         ("right", "UMINUS"),
     )
 
-    names = {}
+    vars = {}
 
-    def p_statement_assign(self, p):
-        'statement : NAME "=" expression'
-        self.names[p[1]] = p[3]
-        p[0] = Node("assign", value=p[1], children=[p[3]])
+    def p_statement_print(self, p):
+        "statement : PRINT expression"
+        p[0] = Node("print", children=[p[2]])
+
+    def p_statement_var(self, p):
+        'statement : VAR NAME "=" expression'
+        self.vars[p[2]] = p[4]
+        p[0] = Node("var", value=p[2], children=[p[4]])
 
     def p_statement_expr(self, p):
         "statement : expression"
@@ -60,6 +64,6 @@ class Grammar:
 
     def build_ast(self, s):
         try:
-            return self.parser.parse(s + "\n", tracking=True, lexer=self.lexer)
+            return self.parser.parse(s, tracking=True, lexer=self.lexer)
         except Exception as e:
             print(e)
